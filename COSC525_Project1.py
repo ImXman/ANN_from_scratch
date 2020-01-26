@@ -10,11 +10,11 @@ Project #1: Articial Neural Networks
 import sys
 import numpy as np
 
-training_set = sys.argv[1]
-loss_function = sys.argv[2]
-activation_function = sys.argv[3]
-learning_rate = float(sys.argv[4])
-layers = list(sys.argv[5].split(','))
+loss_function = sys.argv[1]
+activation_function = sys.argv[2]
+learning_rate = float(sys.argv[3])
+layers = list(sys.argv[4].split(','))
+training_set = sys.argv[5]
 
 
 class Neuron:
