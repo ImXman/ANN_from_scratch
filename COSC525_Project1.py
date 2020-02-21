@@ -5,16 +5,20 @@ Created on Tue Jan 21 09:48:10 2020
 @author: Yang Xu
 
 Project #1: Articial Neural Networks
+Usage: python3 COSC525_Project1.py binary_crossentropy logistic 0.1 2,4,1 10000 xor
 """
 
 import sys
 import numpy as np
+import pandas as pd
 
 loss_function = sys.argv[1]
 activation_function = sys.argv[2]
 learning_rate = float(sys.argv[3])
 layers = list(sys.argv[4].split(','))
-training_set = sys.argv[5]
+layers = [int(i) for i in layers]
+num_epoch=int(sys.argv[5])
+training_set = sys.argv[6]
 
 
 class Neuron:
@@ -120,11 +124,11 @@ class NeuralNetwork:
             if self.activation == "logistic":
                 delta_net = out_layer*(1-out_layer)
             else:
+		#when activation function is linear
                 delta_net = np.array([1]).reshape(1,1)
                 
             if i<len(self.net.layers)-1:
                 ##calculate delta for any layers before the last one
-                #sum_of_delta = np.sum(model.net.layers[i+1].neurons*delta)
                 sum_of_delta = np.sum(self.net.layers[i+1].neurons*delta)##sum weighted delta from next layer
                 delta = sum_of_delta * delta_net
             else:
@@ -152,7 +156,7 @@ class NeuralNetwork:
                 ##update weights in each layer
                 for k in range(len(self.net.layers)-1,-1,-1):
                     self.net.layers[k].calculate()        
-            losses.append(loss/data.shape[0])
+            losses.append(np.mean(loss/data.shape[0]))
         return losses
         
     
@@ -164,16 +168,22 @@ def main():
     elif training_set=="xor":
         data = np.array([[0,0],[0,1],[1,0],[1,1]])
         y = np.array([0,1,1,0]).reshape(4,1)
+    else:
+        ##data should be tab-saparated txt file with no header and index column
+        ##the last column should target value
+        data = pd.read_csv(sys.argv[7],header=None,index_col=False,sep="\t")
+        y = data.iloc[:,-1].values
+        data = data.iloc[:,:-1].values
         
-    model = NeuralNetwork(num_nodes_of_layer=[2,4,1],
-                          activation = "logistic",
-                          loss_function="binary_crossentropy",
-                          learning_rate=1)
+    #model = NeuralNetwork(num_nodes_of_layer=[2,4,1],
+    #                      activation = "logistic",
+    #                      loss_function="binary_crossentropy",
+    #                      learning_rate=1)
     model = NeuralNetwork(num_nodes_of_layer=layers,
                           activation = activation_function,
                           loss_function=loss_function,
                           learning_rate=learning_rate)
-    losses = model.train(data=data,targets=y,num_epoch=10000)
+    losses = model.train(data=data,targets=y,num_epoch=num_epoch)
     losses = np.array(losses)
     np.savetxt("training_loss.txt",losses,fmt='%.5f')
 
