@@ -425,7 +425,6 @@ x = Conv2D(48, kernel_size=(3, 3),strides=(1, 1),
 x = MaxPooling2D(pool_size=(2, 2),name="encoder_MaxPooling2")(x)
 x = Conv2D(96, kernel_size=(3, 3),strides=(1, 1), 
            padding='same',activation='relu', name="encoder_Conv3")(x)
-x = MaxPooling2D(pool_size=(2, 2),name="encoder_MaxPooling3")(x)
 x = Flatten()(x)
 x = Dense(intermediate_dim,activation='relu',name="encoder_hidden")(x)
 
@@ -439,9 +438,8 @@ encoder.summary()
 ##decoder
 latent_inputs = Input(shape=(latent_dim,), name='z_sampling')
 x = Dense(intermediate_dim, activation='relu', name="decoder_hidden")(latent_inputs)
-x = Dense(2352, activation='relu', name="decoder_hidden2")(x)
+x = Dense(4704, activation='relu', name="decoder_hidden2")(x)
 x = Reshape((7,7,96),name="reshape2")(x)##dim of output of the second MaxPooling layer in encoder
-x = UpSampling2D(name="decoder_UpSampling1")(x)
 x = Conv2DTranspose(48,3,1,padding='same',activation='relu',name="decoder_deConv1")(x)
 x = UpSampling2D(name="decoder_UpSampling2")(x)
 x = Conv2DTranspose(24,3,1,padding='same',activation='relu',name="decoder_deConv2")(x)
